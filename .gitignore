@@ -1,0 +1,16 @@
+# generated files
+*.html
+*.pdf
+*.png
+*.svg
+docs
+
+# temporary files
+.*.swp
+*~
+
+# my own files, only for local usage
+*[_.]myown[_.]*
+
+# misc
+.vscode

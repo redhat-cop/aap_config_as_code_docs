@@ -1,0 +1,11 @@
+= AAP Config as Code Collections
+
+- infra.controller_configuration
+- infra.ah_configuration
+- infra.ee_utilities
+- infra.aap_utilities
+- infra.eda_configuration
+
+NOTE: Further documentation for these collections will be stored here.
+
+include::controller_configuration.adoc[leveloffset=+1]

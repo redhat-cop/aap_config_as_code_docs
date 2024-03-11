@@ -1,0 +1,12 @@
+= Ansible Automation Platform Configuration as Code Collections
+include::_style/render.adoc[]
+
+== Introduction
+
+Several collections have been created by the Red Hat Communities of Practice to assist with configuring aspects of the Ansible Automation Platform (AAP) using configuration as code practices. This site will guide you through these collections, the use cases, how to use and strategies for scaling appropriately.
+
+=== Where to get and maintain this document
+
+This document is published to https://redhat-cop.github.io/aap_config_as_code_docs/, it is open source and its source code is maintained at https://github.com/redhat-cop/aap_config_as_code_docs/.
+
+include::collections/README.adoc[leveloffset=1]

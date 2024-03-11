@@ -1,0 +1,144 @@
+= Contribution guidelines
+include::_style/render.adoc[]
+
+Before you suggest _automation_ guidelines, please consider the _contribution_ guidelines layed out in this document.
+
+== Writing
+
+. The guidelines are written in https://asciidoctor.org[asciidoc as described by Asciidoctor].
+. each guideline is made of one sentence, as easy to remember as possible, followed by a collapsible description, made of:
+** explanations
+** rationale
+** examples
++
+The result looks then as the following template shows (you may copy & paste):
++
+[source,asciidoc]
+------------------------------------------------------------------------
+== Do this and do not do that is the guideline
+[%collapsible]
+====
+Explanations:: These are explanations
+
+Rationale:: This is the rationale
+
+Examples:: These are examples
++
+.A mini playbook example
+[source,yaml]
+----
+- name: a mini example of playbook
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  - name: say what we all think
+    debug:
+      msg: asciidoctor is {{ my_private_thoughts }}
+----
++
+Even more examples...
+====
+------------------------------------------------------------------------
+// maintain the code above in sync with the example below
++
+NOTE: see how it looks like in the <<_example>> section below.
++
+. Those guidelines are grouped into sections and optionally sub-sections, as far as required for maintainability.
+. Those (sub-)sections can be written in their own source file, but then are included with `include::directory/file.adoc[leveloffset=1]` in the parent section's file.
+  This makes sure that all source files are interlinked and can be rendered all together by rendering the top `README.adoc`, either with `asciidoctor` or with `asciidoctor-pdf`.
++
+NOTE: this contribution file is obviously not meant for inclusion in the overall document.
++
+. Each source file has a single title (the line starting with one equal sign) and can be rendered individually (the `leveloffset` is set such that it fits in the overall headings structure when included).
+. The source code is written as readable as possible in its raw form, without impacting maintainability.
+. We follow the https://asciidoctor.org/docs/asciidoc-recommended-practices/[Asciidoc recommended practices].
+. Sentences are written in the present tense form, avoid "should", "must", etc.
+  For example, "Sentences are written", not "Sentences should be written" or "Sentences must be written". This avoids filler words.
+. The https://en.wikipedia.org/wiki/Singular_they[singular "they"] is used to avoid the unreadable "he/she/it" construct and still be neutral.
+
+== Contributing
+
+. Just fork the repository, create a Pull Request (PR) and offer your changes.
++
+TIP: limiting each PR to a single recommendation makes it easier to review.
+This furthermore speeds up approval, which is an advantage also for contributors.
+
+. Feel free to review existing PR and give your opinion
+. Also an issue against one of the recommendations is a valid approach
+
+== Example
+
+This is how one guideline as shown above looks like once rendered:
+
+// This is a duplicate from the above code, but rendered e.g. by GitHub, it shows how it's supposed to look like.
+
+=== Do this and do not do that is the guideline
+[%collapsible]
+====
+Explanations:: These are explanations
+
+Rationale:: This is the rationale
+
+Examples:: These are examples
++
+.A mini playbook example
+[source,yaml]
+----
+- name: a mini example of playbook
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+  - name: say what we all think
+    debug:
+      msg: asciidoctor is {{ my_private_thoughts }}
+----
++
+Even more examples...
+====
+
+== Publish for the website
+
+Use for now the following manual command to publish to
+link:++https://redhat-cop.github.io/aap_config_as_code_docs/++[the website]:
+
+[source,bash]
+----
+asciidoctor -a toc=left -D docs -o index.html README.adoc
+asciidoctor -a toc=left -D docs CONTRIBUTE.adoc
+mkdir -p docs/images
+cp -v images/*.svg docs/images
+----
+
+NOTE: it doesn't seem that there is any much better way to keep links to images correct according to the https://docs.asciidoctor.org/asciidoctor/latest/html-backend/manage-images/[HTML generation / managed images] chapter.
+
+== Creating a PDF
+
+If you run (a current) Fedora Linux,
+then you can use the `Makefile`.
+
+* `make view` generates both PDF files and displays the GPA guide
+* `make print` prints to your default printer
+* `make spell` runs hunspell for spellchecking
+* …
+
+Alternatively, use the following manual commands to generate the 2 PDFs:
+
+[source,bash]
+----
+asciidoctor-pdf \
+  --attribute=gitdate=$(git log -1 --date=short --pretty=format:%cd) \
+  --attribute=githash=$(git rev-parse --verify HEAD) \
+  --out-file Good_Practices_for_Ansible.pdf \
+  README.adoc
+asciidoctor-pdf \
+  --attribute=gitdate=$(git log -1 --date=short --pretty=format:%cd) \
+  --attribute=githash=$(git rev-parse --verify HEAD) \
+  --out-file Contributing-to-GPA.pdf \
+  CONTRIBUTE.adoc
+----
