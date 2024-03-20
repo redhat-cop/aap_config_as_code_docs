@@ -1,0 +1,18 @@
+title: "AAP Configuration as Code Docs"
+url: "https://djdanielsson.github.io/aap_config_as_code_docs/"
+avatar: https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/jekyll-logo.png
+# theme: just-the-docs
+remote_theme: just-the-docs/just-the-docs
+kramdown:
+  # Use GitHub flavored markdown, including triple backtick fenced code blocks
+  input: GFM
+  # Jekyll 3 and GitHub Pages now only support rouge for syntax highlighting
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    # Use existing pygments syntax highlighting css
+    css_class: 'highlight'
+plugins:
+  - jekyll-relative-links
+collections:
+  collections:
+    output: true

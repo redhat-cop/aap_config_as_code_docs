@@ -1,0 +1,51 @@
+---
+- name: Set collections
+  ansible.builtin.set_fact:
+    roles_list: []
+    r_roles: []
+
+- name: Get collections
+  ansible.builtin.find:
+    path: "{{ r_tempfile.path }}/{{ outer_item}}/roles/"
+    file_type: directory
+  register: r_roles
+
+- name: Set collections
+  ansible.builtin.set_fact:
+    roles_list: "{{ roles_list | default([]) + [item | ansible.builtin.basename] }}"
+  loop: "{{ r_roles['files'] | map(attribute='path') | flatten }}"
+
+- name: Cleanup readme
+  ansible.builtin.lineinfile:
+    path: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
+    regex: '---'
+    state: absent
+  loop: "{{ roles_list }}"
+
+- name: Remove join(',') that causes issues
+  ansible.builtin.replace:
+    path: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
+    regexp: "{{ _regex }}"
+    replace: ''
+  loop: "{{ roles_list }}"
+  vars:
+    _regex: \| map\(attribute='name'\) \| join\(','\)
+
+- name: Update readme
+  ansible.builtin.lineinfile:
+    path: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
+    insertbefore: BOF
+    line: |
+      ---
+      layout: default
+      ---
+  loop: "{{ roles_list }}"
+
+- name: Copy and rename readme
+  ansible.builtin.copy:
+    src: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
+    dest: "../_collections/{{ outer_item }}/{{ item }}.md"
+    remote_src: true
+    mode: "0644"
+  loop: "{{ roles_list }}"
+...

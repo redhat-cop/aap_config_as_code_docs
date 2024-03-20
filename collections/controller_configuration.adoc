@@ -1,3 +1,0 @@
-= infra.controller_configuration
-
-This Ansible collection allows for easy interaction with an AWX or Ansible Controller server via Ansible roles using the AWX/Controller collection modules.
