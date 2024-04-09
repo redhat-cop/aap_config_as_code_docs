@@ -6,19 +6,19 @@
   tasks:
     - name: Delete directories
       ansible.builtin.file:
-        path: "../_collections"
+        path: "../collections"
         state: absent
         mode: "0755"
 
-    - name: Create _collections directory
+    - name: Create collections directory
       ansible.builtin.file:
-        path: "../_collections"
+        path: "../collections"
         state: directory
         mode: "0755"
 
     - name: Create sub directories
       ansible.builtin.file:
-        path: "../_collections/{{ item }}"
+        path: "../collections/{{ item }}"
         state: directory
         mode: "0755"
       loop:
@@ -100,7 +100,7 @@
 
     - name: Get list of files controller_config
       ansible.builtin.find:
-        path: ../_collections/controller_configuration
+        path: ../collections/controller_configuration
         file_type: file
         patterns: '*.md'
       register: r_controller_config
@@ -112,7 +112,7 @@
 
     - name: Get list of files galaxy_collection
       ansible.builtin.find:
-        path: ../_collections/galaxy_collection
+        path: ../collections/galaxy_collection
         file_type: file
         patterns: '*.md'
       register: r_galaxy_collection
@@ -124,7 +124,7 @@
 
     - name: Get list of files eda_config
       ansible.builtin.find:
-        path: ../_collections/eda_configuration
+        path: ../collections/eda_configuration
         file_type: file
         patterns: '*.md'
       register: r_eda_config
@@ -136,7 +136,7 @@
 
     - name: Get list of files aap_utilities
       ansible.builtin.find:
-        path: ../_collections/aap_utilities
+        path: ../collections/aap_utilities
         file_type: file
         patterns: '*.md'
       register: r_aap_utilities
@@ -148,7 +148,7 @@
 
     - name: Get list of files ee_utilities
       ansible.builtin.find:
-        path: ../_collections/ee_utilities
+        path: ../collections/ee_utilities
         file_type: file
         patterns: '*.md'
       register: r_ee_utilities
@@ -157,10 +157,4 @@
       ansible.builtin.set_fact:
         ee_utilities: "{{ ee_utilities | default([]) + [item | ansible.builtin.basename] }}"
       loop: "{{ r_ee_utilities['files'] | map(attribute='path') | flatten }}"
-
-    - name: Generate index template
-      ansible.builtin.template:
-        src: index.md.j2
-        dest: ../index.md
-        mode: "0644"
 ...

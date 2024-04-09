@@ -6,7 +6,7 @@
 
 - name: Get collections
   ansible.builtin.find:
-    path: "{{ r_tempfile.path }}/{{ outer_item}}/roles/"
+    path: "{{ r_tempfile.path }}/{{ outer_item }}/roles/"
     file_type: directory
   register: r_roles
 
@@ -38,14 +38,23 @@
     line: |
       ---
       layout: default
+      parent: {{ outer_item }}
       ---
   loop: "{{ roles_list }}"
 
 - name: Copy and rename readme
   ansible.builtin.copy:
     src: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
-    dest: "../_collections/{{ outer_item }}/{{ item }}.md"
+    dest: "../collections/{{ outer_item }}/{{ item }}.md"
     remote_src: true
     mode: "0644"
   loop: "{{ roles_list }}"
+
+- name: Create collection index page
+  ansible.builtin.template:
+    src: collection_index.md.j2
+    dest: "../collections/{{ outer_item }}/index.md"
+    mode: "0644"
+  vars:
+    collection_name: "{{ outer_item }}"
 ...
