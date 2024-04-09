@@ -1,12 +1,11 @@
 ---
-- name: Set collections
+- name: Set roles
   ansible.builtin.set_fact:
     roles_list: []
-    r_roles: []
 
-- name: Get collections
+- name: Get roles
   ansible.builtin.find:
-    path: "{{ r_tempfile.path }}/{{ outer_item }}/roles/"
+    path: "{{ r_tempfile.path }}/{{ collection.name }}/roles/"
     file_type: directory
   register: r_roles
 
@@ -17,14 +16,14 @@
 
 - name: Cleanup readme
   ansible.builtin.lineinfile:
-    path: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
+    path: "{{ r_tempfile['path'] }}/{{ collection.name }}/roles/{{ item }}/README.md"
     regex: '---'
     state: absent
   loop: "{{ roles_list }}"
 
 - name: Remove join(',') that causes issues
   ansible.builtin.replace:
-    path: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
+    path: "{{ r_tempfile['path'] }}/{{ collection.name }}/roles/{{ item }}/README.md"
     regexp: "{{ _regex }}"
     replace: ''
   loop: "{{ roles_list }}"
@@ -33,19 +32,20 @@
 
 - name: Update readme
   ansible.builtin.lineinfile:
-    path: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
+    path: "{{ r_tempfile['path'] }}/{{ collection.name }}/roles/{{ item }}/README.md"
     insertbefore: BOF
     line: |
       ---
       layout: default
-      parent: {{ outer_item }}
+      title: {{ item }}
+      parent: {{ collection.namespace }}.{{ collection.name }}
       ---
   loop: "{{ roles_list }}"
 
 - name: Copy and rename readme
   ansible.builtin.copy:
-    src: "{{ r_tempfile['path'] }}/{{ outer_item }}/roles/{{ item }}/README.md"
-    dest: "../collections/{{ outer_item }}/{{ item }}.md"
+    src: "{{ r_tempfile['path'] }}/{{ collection.name }}/roles/{{ item }}/README.md"
+    dest: "../collections/{{ collection.name }}/{{ item }}.md"
     remote_src: true
     mode: "0644"
   loop: "{{ roles_list }}"
@@ -53,8 +53,9 @@
 - name: Create collection index page
   ansible.builtin.template:
     src: collection_index.md.j2
-    dest: "../collections/{{ outer_item }}/index.md"
+    dest: "../collections/{{ collection.name }}/index.md"
     mode: "0644"
   vars:
-    collection_name: "{{ outer_item }}"
+    collection_name: "{{ collection.name }}"
+    collection_namespace: "{{ collection.namespace }}"
 ...

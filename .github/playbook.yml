@@ -3,6 +3,23 @@
   hosts: localhost
   connection: local
   gather_facts: false
+  vars:
+    collection_list:
+      - name: controller_configuration
+        namespace: infra
+        repo: https://github.com/redhat-cop/controller_configuration.git
+      - name: ah_configuration
+        namespace: infra
+        repo: https://github.com/ansible/galaxy_collection.git
+      - name: eda_configuration
+        namespace: infra
+        repo: https://github.com/redhat-cop/eda_configuration.git
+      - name: aap_utilities
+        namespace: infra
+        repo: https://github.com/redhat-cop/aap_utilities.git
+      - name: ee_utilities
+        namespace: infra
+        repo: https://github.com/redhat-cop/ee_utilities.git
   tasks:
     - name: Delete directories
       ansible.builtin.file:
@@ -18,15 +35,10 @@
 
     - name: Create sub directories
       ansible.builtin.file:
-        path: "../collections/{{ item }}"
+        path: "../collections/{{ item.name }}"
         state: directory
         mode: "0755"
-      loop:
-        - controller_configuration
-        - galaxy_collection
-        - eda_configuration
-        - aap_utilities
-        - ee_utilities
+      loop: "{{ collection_list }}"
 
     - name: Create temporary direcotry
       ansible.builtin.tempfile:
@@ -36,125 +48,23 @@
 
     - name: Create temporary directories
       ansible.builtin.file:
-        path: "{{ r_tempfile['path'] }}/{{ item }}"
+        path: "{{ r_tempfile['path'] }}/{{ item.name }}"
         state: directory
         mode: "0755"
-      loop:
-        - controller_configuration
-        - galaxy_collection
-        - eda_configuration
-        - aap_utilities
-        - ee_utilities
+      loop: "{{ collection_list }}"
 
-    - name: Clone controller_configuration
+    - name: Clone collections
       ansible.builtin.git:
-        repo: https://github.com/redhat-cop/controller_configuration.git
-        dest: "{{ r_tempfile['path'] }}/controller_configuration/"
+        repo: "{{ item.repo }}"
+        dest: "{{ r_tempfile['path'] }}/{{ item.name }}/"
         single_branch: true
         version: devel
-
-    - name: Clone galaxy_collection
-      ansible.builtin.git:
-        repo: https://github.com/ansible/galaxy_collection.git
-        dest: "{{ r_tempfile['path'] }}/galaxy_collection"
-        single_branch: true
-        version: devel
-
-    - name: Clone eda_configuration
-      ansible.builtin.git:
-        repo: https://github.com/redhat-cop/eda_configuration.git
-        dest: "{{ r_tempfile['path'] }}/eda_configuration"
-        single_branch: true
-        version: devel
-
-    - name: Clone aap_utilities
-      ansible.builtin.git:
-        repo: https://github.com/redhat-cop/aap_utilities.git
-        dest: "{{ r_tempfile['path'] }}/aap_utilities"
-        single_branch: true
-        version: devel
-
-    - name: Clone ee_utilities
-      ansible.builtin.git:
-        repo: https://github.com/redhat-cop/ee_utilities.git
-        dest: "{{ r_tempfile['path'] }}/ee_utilities"
-        single_branch: true
-        version: devel
-
-    - name: Get collections
-      ansible.builtin.find:
-        path: "{{ r_tempfile.path }}"
-        file_type: directory
-      register: r_directories
-
-    - name: Set collections
-      ansible.builtin.set_fact:
-        collection_list: "{{ collection_list | default([]) + [item | ansible.builtin.basename] }}"
-      loop: "{{ r_directories['files'] | map(attribute='path') | flatten }}"
+      loop: "{{ collection_list }}"
 
     - name: Loop through each collection
       ansible.builtin.include_tasks: fix_readme.yml
       loop: "{{ collection_list }}"
       loop_control:
-        loop_var: outer_item
-
-    - name: Get list of files controller_config
-      ansible.builtin.find:
-        path: ../collections/controller_configuration
-        file_type: file
-        patterns: '*.md'
-      register: r_controller_config
-
-    - name: Set file names controller_config
-      ansible.builtin.set_fact:
-        controller_config: "{{ controller_config | default([]) + [item | ansible.builtin.basename] }}"
-      loop: "{{ r_controller_config['files'] | map(attribute='path') | flatten }}"
-
-    - name: Get list of files galaxy_collection
-      ansible.builtin.find:
-        path: ../collections/galaxy_collection
-        file_type: file
-        patterns: '*.md'
-      register: r_galaxy_collection
-
-    - name: Set file names galaxy_collection
-      ansible.builtin.set_fact:
-        galaxy_collection: "{{ galaxy_collection | default([]) + [item | ansible.builtin.basename] }}"
-      loop: "{{ r_galaxy_collection['files'] | map(attribute='path') | flatten }}"
-
-    - name: Get list of files eda_config
-      ansible.builtin.find:
-        path: ../collections/eda_configuration
-        file_type: file
-        patterns: '*.md'
-      register: r_eda_config
-
-    - name: Set file names eda_config
-      ansible.builtin.set_fact:
-        eda_config: "{{ eda_config | default([]) + [item | ansible.builtin.basename] }}"
-      loop: "{{ r_eda_config['files'] | map(attribute='path') | flatten }}"
-
-    - name: Get list of files aap_utilities
-      ansible.builtin.find:
-        path: ../collections/aap_utilities
-        file_type: file
-        patterns: '*.md'
-      register: r_aap_utilities
-
-    - name: Set file names aap_utilities
-      ansible.builtin.set_fact:
-        aap_utilities: "{{ aap_utilities | default([]) + [item | ansible.builtin.basename] }}"
-      loop: "{{ r_aap_utilities['files'] | map(attribute='path') | flatten }}"
-
-    - name: Get list of files ee_utilities
-      ansible.builtin.find:
-        path: ../collections/ee_utilities
-        file_type: file
-        patterns: '*.md'
-      register: r_ee_utilities
-
-    - name: Set file names ee_utilities
-      ansible.builtin.set_fact:
-        ee_utilities: "{{ ee_utilities | default([]) + [item | ansible.builtin.basename] }}"
-      loop: "{{ r_ee_utilities['files'] | map(attribute='path') | flatten }}"
+        loop_var: collection
+        index_var: nav_order
 ...

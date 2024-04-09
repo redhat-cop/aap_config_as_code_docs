@@ -1,7 +1,8 @@
 ---
 layout: default
-title: {{ collection_name }}
+title: {{ collection_namespace }}.{{ collection_name }}
 has_children: true
+nav_order: {{ (nav_order | default(-2)) + 2 }}
 ---
 
 # {{ collection_name }}
