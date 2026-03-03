@@ -43,7 +43,7 @@ Links to other Validated Configuration Collections for Ansible Automation Platfo
 |[AAP Configuration Template](https://github.com/redhat-cop/aap_configuration_template)|Configuration Template for this suite|
 
 ## Contributing to this Documentation
-We welcome community contributions to this documentation, or any of the mentioned collections. If you find problems, please open an issue and consider creating a PR against this, or any relevant, repository. More information about contributing can be found in our [Contribution Guidelines](CONTRIBUTE.html).
+We welcome community contributions to this documentation, or any of the mentioned collections. If you find problems, please open an issue and consider creating a PR against this, or any relevant, repository. More information about contributing can be found in our [Contribution Guidelines](CONTRIBUTING.md).
 
 We have a community meeting every 4 weeks. Find the agenda in the issues and the calendar invitation below:
 
